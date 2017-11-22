@@ -1,9 +1,10 @@
-import { ADD_POST, ADD_POSTS, DELETE_POST } from './PostActions';
+import { ADD_POST, ADD_POSTS, DELETE_POST, ADD_COMMENT } from './PostActions';
 
 // Initial State
 const initialState = { data: [] };
 
 const PostReducer = (state = initialState, action) => {
+  let posts;
   switch (action.type) {
     case ADD_POST :
       return {
@@ -18,6 +19,27 @@ const PostReducer = (state = initialState, action) => {
     case DELETE_POST :
       return {
         data: state.data.filter(post => post.cuid !== action.cuid),
+      };
+
+    case ADD_COMMENT :
+      posts = JSON.stringify(state.data);
+      posts = JSON.parse(posts);
+
+      for (let i = 0; i < posts.length; i++) {
+        if (posts[i].cuid === action.comment.pid) {
+          posts[i].comments.push([{
+            name: action.comment.name,
+            content: action.comment.content,
+            pid: action.comment.pid,
+            dateAdded: action.comment.dateAdded,
+            __v: action.comment.__v,
+            _id: action.comment._id,
+          }]);
+        }
+      }
+
+      return {
+        data: posts,
       };
 
     default:
