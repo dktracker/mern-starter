@@ -13,9 +13,11 @@ function PostListItem(props) {
           {props.post.title}
         </Link>
       </h3>
-      <p className={styles['author-name']}><FormattedMessage id="by" /> {props.post.name}</p>
+      <p className={styles['author-name']}><FormattedMessage id="by" /> {props.post.name} | <span className={styles['comments-title']}>Comments: </span>
+        <span className={styles['comments-count']}>{props.post.comments.length}</span>
+      </p>
       <p className={styles['post-desc']}>{props.post.content}</p>
-      <p className={styles['post-action']}><a href="#" onClick={props.onDelete}><FormattedMessage id="deletePost" /></a></p>
+      <p className={styles['post-action']}><a onClick={props.onDelete}><FormattedMessage id="deletePost" /></a></p>
       <hr className={styles.divider} />
     </div>
   );
@@ -28,6 +30,7 @@ PostListItem.propTypes = {
     content: PropTypes.string.isRequired,
     slug: PropTypes.string.isRequired,
     cuid: PropTypes.string.isRequired,
+    comments: PropTypes.array.isRequired,
   }).isRequired,
   onDelete: PropTypes.func.isRequired,
 };

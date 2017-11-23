@@ -2,22 +2,16 @@ import callApi from '../../util/apiCaller';
 
 // Export Constants
 export const ADD_POST = 'ADD_POST';
-export const ADD_COMMENT = 'ADD_COMMENT';
 export const ADD_POSTS = 'ADD_POSTS';
 export const DELETE_POST = 'DELETE_POST';
+export const ADD_COMMENT = 'ADD_COMMENT';
+export const DELETE_COMMENT = 'DELETE_COMMENT';
 
 // Export Actions
 export function addPost(post) {
   return {
     type: ADD_POST,
     post,
-  };
-}
-
-export function addComment(comment) {
-  return {
-    type: ADD_COMMENT,
-    comment,
   };
 }
 
@@ -33,6 +27,13 @@ export function addPostRequest(post) {
   };
 }
 
+export function addComment(comment) {
+  return {
+    type: ADD_COMMENT,
+    comment,
+  };
+}
+
 export function addCommentRequest(comment) {
   return (dispatch) => {
     return callApi('comments', 'post', {
@@ -42,6 +43,19 @@ export function addCommentRequest(comment) {
         pid: comment.pid,
       },
     }).then(res => dispatch(addComment(res.comment)));
+  };
+}
+
+export function deleteComment(comment) {
+  return {
+    type: DELETE_COMMENT,
+    comment,
+  };
+}
+
+export function deleteCommentRequest(comment) {
+  return (dispatch) => {
+    return callApi(`comments/${comment.id}`, 'delete').then(() => dispatch(deleteComment(comment)));
   };
 }
 

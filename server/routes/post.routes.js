@@ -11,10 +11,13 @@ router.route('/posts/:cuid').get(PostController.getPost);
 // Add a new Post
 router.route('/posts').post(PostController.addPost);
 
-// Add a new Post
+// Delete a post by cuid
+router.route('/posts/:cuid').delete(PostController.deletePost);
+
+// Add a new Comment
 router.route('/comments').post(PostController.addComment);
 
 // Delete a post by cuid
-router.route('/posts/:cuid').delete(PostController.deletePost);
+router.route('/comments/:id').delete(PostController.deleteComment);
 
 export default router;

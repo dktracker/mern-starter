@@ -10,7 +10,7 @@ import PostCommentWidget from '../../components/PostCommentWidget/PostCommentWid
 import styles from '../../components/PostListItem/PostListItem.css';
 
 // Import Actions
-import { addCommentRequest, fetchPost } from '../../PostActions';
+import { addCommentRequest, deleteCommentRequest, fetchPost } from '../../PostActions';
 
 // Import Selectors
 import { getPost } from '../../PostReducer';
@@ -20,6 +20,10 @@ class PostDetailPage extends Component {
 
   handleAddComment = (name, content, pid) => {
     this.props.dispatch(addCommentRequest({ name, content, pid }));
+  };
+
+  handleDeleteComment = (pid, id) => {
+    this.props.dispatch(deleteCommentRequest({ id, pid }));
   };
 
   render() {
@@ -32,7 +36,7 @@ class PostDetailPage extends Component {
           <p className={styles['post-desc']}>{this.props.post.content}</p>
         </div>
 
-        <PostCommentWidget addComment={this.handleAddComment} post={this.props.post} />
+        <PostCommentWidget addComment={this.handleAddComment} deleteComment={this.handleDeleteComment} post={this.props.post} />
 
       </div>
     );

@@ -14,12 +14,18 @@ export class PostCommentWidget extends Component {
     }
   };
 
+  deleteComment = (pid, id) => {
+    this.props.deleteComment(pid, id);
+  }
+
   render() {
     const data = this.props.post.comments;
     const commentsList = data.map(d => {
       return (<div className={styles['comment-item']} key={d[0]._id}>
         <p className={styles['comment-author']}>{d[0].name} <span className={styles['comment-time']}>[{d[0].dateAdded}]:</span></p>
         <p className={styles['comment-text']}>{d[0].content}</p>
+        <p className={styles['comment-controls']}>
+          <a className={styles['comment-controls-delete']} onClick={() => this.deleteComment(d[0].pid, d[0]._id)}>delete comment</a></p>
       </div>);
     });
 
@@ -30,7 +36,7 @@ export class PostCommentWidget extends Component {
           <h3>Post comment</h3>
           <input placeholder="Author name" className={styles['form-field-input']} ref="name" />
           <textarea placeholder="Comment text" className={styles['form-field-textarea']} ref="content" />
-          <a className={styles['comment-submit-button']} href="#" onClick={this.addComment}><FormattedMessage id="submit" /></a>
+          <a className={styles['comment-submit-button']} onClick={this.addComment}><FormattedMessage id="submit" /></a>
         </div>
 
         <h3>Comments</h3>
@@ -49,9 +55,10 @@ PostCommentWidget.propTypes = {
     content: PropTypes.string.isRequired,
     slug: PropTypes.string.isRequired,
     cuid: PropTypes.string.isRequired,
-    comments: PropTypes.string.isRequired,
+    comments: PropTypes.array.isRequired,
   }).isRequired,
   addComment: PropTypes.func.isRequired,
+  deleteComment: PropTypes.func.isRequired,
   intl: intlShape.isRequired,
 };
 

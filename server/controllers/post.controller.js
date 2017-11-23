@@ -69,7 +69,7 @@ export function addPost(req, res) {
 }
 
 /**
- * Save a post
+ * Add a comment
  * @param req
  * @param res
  * @returns void
@@ -95,13 +95,31 @@ export function addComment(req, res) {
 }
 
 /**
+ * Delete a comment
+ * @param req
+ * @param res
+ * @returns void
+ */
+export function deleteComment(req, res) {
+  Comment.findOne({ _id: req.params.id }).exec((err, comment) => {
+    if (err) {
+      res.status(500).send(err);
+    }
+
+    comment.remove(() => {
+      res.status(200).end();
+    });
+  });
+}
+
+/**
  * Get a single post
  * @param req
  * @param res
  * @returns void
  */
 export function getPost(req, res) {
-  Comment.find().exec((error, comments) => {
+  Comment.find({ pid: req.params.cuid }).exec((error, comments) => {
     _comments = comments;
     Post.findOne({ cuid: req.params.cuid }).exec((err, post) => {
       if (err) {
@@ -109,15 +127,13 @@ export function getPost(req, res) {
       }
 
       for (let j = 0; j < _comments.length; j++) {
-        if (_comments[j].pid === post.cuid) {
-          post.comments.push({
-            name: _comments[j].name,
-            content: _comments[j].content,
-            pid: _comments[j].pid,
-            dateAdded: _comments[j].dateAdded,
-            _id: _comments[j]._id,
-          });
-        }
+        post.comments.push({
+          name: _comments[j].name,
+          content: _comments[j].content,
+          pid: _comments[j].pid,
+          dateAdded: _comments[j].dateAdded,
+          _id: _comments[j]._id,
+        });
       }
 
       res.json({ post });
