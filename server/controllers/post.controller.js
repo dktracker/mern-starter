@@ -1,4 +1,5 @@
 import Post from '../models/post';
+import Comment from '../models/comment';
 import cuid from 'cuid';
 import slug from 'limax';
 import sanitizeHtml from 'sanitize-html';
@@ -9,12 +10,33 @@ import sanitizeHtml from 'sanitize-html';
  * @param res
  * @returns void
  */
+
+let _comments = [];
+
 export function getPosts(req, res) {
-  Post.find().sort('-dateAdded').exec((err, posts) => {
-    if (err) {
-      res.status(500).send(err);
-    }
-    res.json({ posts });
+  Comment.find().exec((error, comments) => {
+    _comments = comments;
+    Post.find().sort('-dateAdded').exec((err, posts) => {
+      if (err) {
+        res.status(500).send(err);
+      }
+
+      for (let i = 0; i < posts.length; i++) {
+        for (let j = 0; j < _comments.length; j++) {
+          if (_comments[j].pid === posts[i].cuid) {
+            posts[i].comments.push({
+              name: _comments[j].name,
+              content: _comments[j].content,
+              pid: _comments[j].pid,
+              dateAdded: _comments[j].dateAdded,
+              _id: _comments[j]._id,
+            });
+          }
+        }
+      }
+
+      res.json({ posts });
+    });
   });
 }
 
@@ -47,17 +69,75 @@ export function addPost(req, res) {
 }
 
 /**
+ * Add a comment
+ * @param req
+ * @param res
+ * @returns void
+ */
+export function addComment(req, res) {
+  if (!req.body.comment.name || !req.body.comment.content) {
+    res.status(403).end();
+  }
+
+  const newComment = new Comment(req.body.comment);
+
+  // Let's sanitize inputs
+  newComment.name = sanitizeHtml(newComment.name);
+  newComment.content = sanitizeHtml(newComment.content);
+  newComment.cuid = sanitizeHtml(newComment.cuid);
+
+  newComment.save((err, saved) => {
+    if (err) {
+      res.status(500).send(err);
+    }
+    res.json({ comment: saved });
+  });
+}
+
+/**
+ * Delete a comment
+ * @param req
+ * @param res
+ * @returns void
+ */
+export function deleteComment(req, res) {
+  Comment.findOne({ _id: req.params.id }).exec((err, comment) => {
+    if (err) {
+      res.status(500).send(err);
+    }
+
+    comment.remove(() => {
+      res.status(200).end();
+    });
+  });
+}
+
+/**
  * Get a single post
  * @param req
  * @param res
  * @returns void
  */
 export function getPost(req, res) {
-  Post.findOne({ cuid: req.params.cuid }).exec((err, post) => {
-    if (err) {
-      res.status(500).send(err);
-    }
-    res.json({ post });
+  Comment.find({ pid: req.params.cuid }).exec((error, comments) => {
+    _comments = comments;
+    Post.findOne({ cuid: req.params.cuid }).exec((err, post) => {
+      if (err) {
+        res.status(500).send(err);
+      }
+
+      for (let j = 0; j < _comments.length; j++) {
+        post.comments.push({
+          name: _comments[j].name,
+          content: _comments[j].content,
+          pid: _comments[j].pid,
+          dateAdded: _comments[j].dateAdded,
+          _id: _comments[j]._id,
+        });
+      }
+
+      res.json({ post });
+    });
   });
 }
 

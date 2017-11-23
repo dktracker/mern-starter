@@ -1,4 +1,5 @@
 import Post from './models/post';
+import Comment from './models/comment';
 
 export default function () {
   Post.count().exec((err, count) => {
@@ -34,10 +35,25 @@ export default function () {
       qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem
       ipsum quia dolor sit amet.`;
 
-    const post1 = new Post({ name: 'Admin', title: 'Hello MERN', slug: 'hello-mern', cuid: 'cikqgkv4q01ck7453ualdn3hd', content: content1 });
-    const post2 = new Post({ name: 'Admin', title: 'Lorem Ipsum', slug: 'lorem-ipsum', cuid: 'cikqgkv4q01ck7453ualdn3hf', content: content2 });
+    const post1 = new Post({ name: 'Admin', title: 'Hello MERN', slug: 'hello-mern', cuid: 'cikqgkv4q01ck7453ualdn3hd', content: content1, comments: [] });
+    const post2 = new Post({ name: 'Admin', title: 'Lorem Ipsum', slug: 'lorem-ipsum', cuid: 'cikqgkv4q01ck7453ualdn3hf', content: content2, comments: [] });
 
     Post.create([post1, post2], (error) => {
+      if (!error) {
+        // console.log('ready to go....');
+      }
+    });
+  });
+
+  Comment.count().exec((err, count) => {
+    if (count > 0) {
+      return;
+    }
+
+    const comment1 = new Comment({ name: 'Guest1', pid: 'cikqgkv4q01ck7453ualdn3hd', content: 'test comment' });
+    const comment2 = new Comment({ name: 'Guest2', pid: 'cikqgkv4q01ck7453ualdn3hf', content: 'another test comment' });
+
+    Comment.create([comment1, comment2], (error) => {
       if (!error) {
         // console.log('ready to go....');
       }
